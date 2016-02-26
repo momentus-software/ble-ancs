@@ -84,16 +84,19 @@ BleAncs.prototype.onNotification = function(data) {
 BleAncs.prototype.onData = function(data) {
   var commandId = data.readUInt8(0);
 
-  if (commandId === 0x00) {
+  if (commandId === 0x00 && data.length > 5) {
     var uid = data.readUInt32LE(1);
     var notificationData = data.slice(5);
 
     this._lastUid = uid;
-
-    this._notifications[uid].emit('data', notificationData);
+    var notification = this._notifications[uid];
+    if (notification != undefined) {
+        notifcation.emit('data', notificationData);
+    }
   } else {
-    if (this._lastUid) {
-      this._notifications[this._lastUid].emit('data',data);
+    var notification = this._notifications[this._lastUid];
+    if (notification) {
+        notification.emit('data', data);
     }
   }
 };
